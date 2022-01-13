@@ -19,6 +19,9 @@
 		4246D040278B2A4100A196FA /* DataFromAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D03F278B2A4100A196FA /* DataFromAPI.swift */; };
 		4246D045278B386B00A196FA /* TableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D044278B386B00A196FA /* TableViewModel.swift */; };
 		4246D04B278DFEF700A196FA /* tableViewRedo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D04A278DFEF700A196FA /* tableViewRedo.swift */; };
+		4246D04F278E687600A196FA /* SearchStringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D04E278E687600A196FA /* SearchStringExtension.swift */; };
+		4246D051278E729800A196FA /* SearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D050278E729800A196FA /* SearchRepository.swift */; };
+		4246D053278F943000A196FA /* SearchArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4246D052278F943000A196FA /* SearchArrayExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +39,9 @@
 		4246D044278B386B00A196FA /* TableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewModel.swift; sourceTree = "<group>"; };
 		4246D049278C819800A196FA /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		4246D04A278DFEF700A196FA /* tableViewRedo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableViewRedo.swift; sourceTree = "<group>"; };
+		4246D04E278E687600A196FA /* SearchStringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStringExtension.swift; sourceTree = "<group>"; };
+		4246D050278E729800A196FA /* SearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepository.swift; sourceTree = "<group>"; };
+		4246D052278F943000A196FA /* SearchArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchArrayExtension.swift; sourceTree = "<group>"; };
 		9E61BFA6781150E0525CC60B /* Pods-RXassessment.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RXassessment.debug.xcconfig"; path = "Target Support Files/Pods-RXassessment/Pods-RXassessment.debug.xcconfig"; sourceTree = "<group>"; };
 		B42F7960B977C8C30545A595 /* Pods_RXassessment.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RXassessment.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED93557A50CED381FBAB9472 /* Pods-RXassessment.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RXassessment.release.xcconfig"; path = "Target Support Files/Pods-RXassessment/Pods-RXassessment.release.xcconfig"; sourceTree = "<group>"; };
@@ -76,6 +82,7 @@
 			children = (
 				4246D022278A6EC600A196FA /* AppDelegate.swift */,
 				4246D024278A6EC600A196FA /* SceneDelegate.swift */,
+				4246D04D278E685C00A196FA /* Extension */,
 				4246D03E278B29DC00A196FA /* Module */,
 				4246D037278B1F7600A196FA /* View */,
 				4246D043278B31B100A196FA /* View Module */,
@@ -101,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				4246D03F278B2A4100A196FA /* DataFromAPI.swift */,
+				4246D050278E729800A196FA /* SearchRepository.swift */,
 			);
 			path = Module;
 			sourceTree = "<group>";
@@ -112,6 +120,15 @@
 				4246D04A278DFEF700A196FA /* tableViewRedo.swift */,
 			);
 			path = "View Module";
+			sourceTree = "<group>";
+		};
+		4246D04D278E685C00A196FA /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				4246D04E278E687600A196FA /* SearchStringExtension.swift */,
+				4246D052278F943000A196FA /* SearchArrayExtension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		6D18A02D484839D3F14F8DB4 /* Frameworks */ = {
@@ -250,8 +267,11 @@
 				4246D027278A6EC600A196FA /* TableView.swift in Sources */,
 				4246D040278B2A4100A196FA /* DataFromAPI.swift in Sources */,
 				4246D03C278B222C00A196FA /* TableViewCell.swift in Sources */,
+				4246D053278F943000A196FA /* SearchArrayExtension.swift in Sources */,
 				4246D045278B386B00A196FA /* TableViewModel.swift in Sources */,
+				4246D04F278E687600A196FA /* SearchStringExtension.swift in Sources */,
 				4246D023278A6EC600A196FA /* AppDelegate.swift in Sources */,
+				4246D051278E729800A196FA /* SearchRepository.swift in Sources */,
 				4246D025278A6EC600A196FA /* SceneDelegate.swift in Sources */,
 				4246D04B278DFEF700A196FA /* tableViewRedo.swift in Sources */,
 			);
