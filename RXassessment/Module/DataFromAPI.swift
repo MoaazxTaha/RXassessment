@@ -15,7 +15,11 @@ struct DataFromAPI : Codable {
     let next_page : String?
 }
 
-struct Photos : Codable {
+struct Photos : Codable, Equatable {
+    static func == (lhs: Photos, rhs: Photos) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     let id : Int?
     let width : Int?
     let height : Int?

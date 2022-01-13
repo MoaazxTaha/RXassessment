@@ -13,24 +13,23 @@ class TableView : UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    let tableModel = TableViewModel()
+    let viewModel = TableViewModel()
     
     let disposalBag = DisposeBag()
-    let throttleIntervalInMilliseconds = 100
+    let debounceIntervalInMilliseconds = 500
     
     //MARK:- View cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupSearchBar()
-        tableModel.FitchData { tablePictures in
-            if let pictures = tablePictures {
-                DispatchQueue.main.async {
-                    self.tableViewSetup()
+        bind()
+        tableViewSetup()
+        viewModel.fetchData {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else {return}
                     self.tableViewHandling ()
                 }
-            }
         }
     }
 }
@@ -38,24 +37,27 @@ class TableView : UIViewController {
 //MARK:- RX setup
 private extension TableView {
     
-    func setupSearchBar() {
+    func bind() {
         
-        searchBar
-        .rx
-        .text
+        //Filteration
+        searchBar.rx.text
         .orEmpty
-        .observeOn(MainScheduler.asyncInstance)
+        .observe(on: MainScheduler.asyncInstance)
         .distinctUntilChanged()
-        .throttle(.milliseconds(throttleIntervalInMilliseconds), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { searchtext in
-                self.tableModel.searchRepository.searchBar.accept(searchtext)
-            }).disposed(by: disposalBag)
+        .debounce(.milliseconds(debounceIntervalInMilliseconds), scheduler: MainScheduler.instance)
+        .map({ term in
+                term.lowercased()
+                    .trimmingCharacters(in: .whitespaces)
+            })
+        .subscribe(onNext: { searchtext in
+                self.viewModel.searchRepository.searchText.accept(searchtext)
+        })
+        .disposed(by: disposalBag)
         
     }
     
     func tableViewSetup() {
 
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UINib(nibName: TableViewCell.identifier, bundle: nil), forCellReuseIdentifier: TableViewCell.identifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
@@ -64,7 +66,9 @@ private extension TableView {
     
     func tableViewHandling() {
         
-        tableModel.searchRepository.requestedPictures.map{$0}
+        viewModel.searchRepository.requestedPictures
+            .map{$0}
+            .subscribe(on: MainScheduler.instance)
             .bind(to: tableView
                     .rx
                     .items(cellIdentifier: TableViewCell.identifier,
@@ -73,7 +77,6 @@ private extension TableView {
                 
                 
                 cell.configureTableCell(photos: pictures)
-//                cell.layoutIfNeeded()
             }.disposed(by: disposalBag)
     }
 }

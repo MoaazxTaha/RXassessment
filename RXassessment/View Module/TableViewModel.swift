@@ -27,7 +27,7 @@ init () {
 
 extension TableViewModel {
     
-    func FitchData (handler: @escaping (_ LoadedData: DataFromAPI?)->Void)  {
+    func fetchData (handler: @escaping ()->Void)  {
         let url = URL(string: url)
         
         let session = URLSession(configuration: .default)
@@ -38,24 +38,25 @@ extension TableViewModel {
         let task = session.dataTask(with: Request) { [self]
             (Data, URLResponse, Error) in
             
-            if Error != nil {
-                print(Error?.localizedDescription)  }
+            if let err = Error {
+                print(err.localizedDescription)
+            }
             
             if let data = Data {
                 
                 let decoded = self.decodeData(Data: data)
-                if let data = decoded {
-                    self.fitchedData.accept(data.photos!)
+                if let data = decoded?.photos {
+                    self.fitchedData.accept(data)
                     if searchRepository.SearchState.value == false{
-                        self.searchRepository.requestedPictures.accept(data.photos!)
-                        handler(data)
+                        self.searchRepository.requestedPictures.accept(data)
+                        handler()
                     } else {
                         searchResult()
                     }
                 }
             }
             else {
-                handler(nil)
+                handler()
             }
         }
         task.resume()
@@ -88,20 +89,20 @@ extension TableViewModel {
         
 //        guard searchRepository.searchBar.value != "" else {return false}
         
-         searchRepository.searchBar.asObservable().subscribe({ searchtext in
-            
-            if self.searchRepository.searchBar.value != "" {
-                let value = searchtext.element.map{
-                    self.prepareSearchText(searchText: $0)
-            }
-                self.searchRepository.searchText.accept(value!)
-                print (self.searchRepository.searchText.value)
-                self.searchRepository.SearchState.accept(true)
-            }
-            else {
-                self.searchRepository.SearchState.accept(false)
-            }
-        }).disposed(by: disposeBag) as? Disposable
+//         searchRepository.searchBar.asObservable().subscribe({ searchtext in
+//
+//            if self.searchRepository.searchBar.value != "" {
+//                let value = searchtext.element.map{
+//                    self.prepareSearchText(searchText: $0)
+//            }
+//                self.searchRepository.searchText.accept(value!)
+//                print (self.searchRepository.searchText.value)
+//                self.searchRepository.SearchState.accept(true)
+//            }
+//            else {
+//                self.searchRepository.SearchState.accept(false)
+//            }
+//        }).disposed(by: disposeBag)
         
         
     }
@@ -137,42 +138,60 @@ extension TableViewModel {
     
     
     func searchResult() {
-        searchRepository.SearchState.asObservable().subscribe({ state in
-//
-            if state.element == true {
-            
-                let cellIndexofMatchingDescriptions = self.searchRepository.searchList.descriptions.compactMap({(item:String)->Int? in
-                    if (item.range(of: self.searchRepository.searchText.value, options: .caseInsensitive, range: nil, locale: nil) != nil) {
-                        return self.searchRepository.searchList.descriptions.firstIndex(of: item) }
-                else {
-                    return nil
-                }
-            }).removingDuplicates()
+        searchRepository.searchText.filter({$0.isEmpty}).subscribe { _ in
+            self.searchRepository.requestedPictures.accept(self.fitchedData.value)
+        }.disposed(by: disposeBag)
+
+        searchRepository.searchText
+            .filter({!$0.isEmpty})
+            .map({ term in
                 
-                let cellIndexofMatchingTitles = self.searchRepository.searchList.titles.compactMap({(item:String)->Int? in
-                    if (item.range(of: self.searchRepository.searchText.value, options: .caseInsensitive, range: nil, locale: nil) != nil) {
-                        return self.searchRepository.searchList.titles.firstIndex(of: item) }
-                else {
-                    return nil
-                }
-                }).removingDuplicates()
-            
-            let cellIndexOfSearchResult = (cellIndexofMatchingDescriptions + cellIndexofMatchingTitles).sorted()
-            
-            var value:[Photos] = []
-            for numbers in cellIndexofMatchingTitles {
-                value.append(self.fitchedData.value[numbers])
-            }
-            
-            self.searchRepository.requestedPictures.accept(value)
-            }
-            else {
-                self.searchRepository.requestedPictures.accept(self.fitchedData.value)
-            }
-        })
+                let result = self.fitchedData.value.filter({($0.photographer!.searchable().contains(term)) ||
+                    (($0.alt!.searchable().contains(term)))
+                })
+                
+                return result
+            })
+            .distinctUntilChanged()
+            .bind(to: searchRepository.requestedPictures)
+            .disposed(by: disposeBag)
         
+//            .subscribe({ text in
+//
+//                let cellIndexofMatchingDescriptions = self.searchRepository.searchList.descriptions.compactMap({(item:String)->Int? in
+//                    if (item.range(of: self.searchRepository.searchText.value, options: .caseInsensitive, range: nil, locale: nil) != nil) {
+//                        return self.searchRepository.searchList.descriptions.firstIndex(of: item) }
+//                else {
+//                    return nil
+//                }
+//            }).removingDuplicates()
+//
+//                let cellIndexofMatchingTitles = self.searchRepository.searchList.titles.compactMap({(item:String)->Int? in
+//                    if (item.range(of: self.searchRepository.searchText.value, options: .caseInsensitive, range: nil, locale: nil) != nil) {
+//                        return self.searchRepository.searchList.titles.firstIndex(of: item) }
+//                else {
+//                    return nil
+//                }
+//                }).removingDuplicates()
+//
+//            let cellIndexOfSearchResult = (cellIndexofMatchingDescriptions + cellIndexofMatchingTitles).sorted()
+//
+//            var value:[Photos] = []
+//            for numbers in cellIndexofMatchingTitles {
+//                value.append(self.fitchedData.value[numbers])
+//            }
+//
+//            self.searchRepository.requestedPictures.accept(value)
+//
+//        })
+//        .disposed(by: disposeBag)
         
         }
     
 }
 
+extension String {
+    func searchable() -> String {
+        return self.lowercased().trimmingCharacters(in: .whitespaces)
+    }
+}
