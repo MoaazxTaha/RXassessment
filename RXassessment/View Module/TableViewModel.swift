@@ -12,8 +12,10 @@ import RxCocoa
 class TableViewModel {
     let auth = "563492ad6f91700001000001db43b2c8f7654581b8b9cf045e26721c"
     let url = "https://api.pexels.com/v1/search?query=people"
+    
     var fetchedPictures : BehaviorRelay<[Photos]> = BehaviorRelay(value: [])
-    let searchRepository = SearchRepository()
+    var filteredPictures : BehaviorRelay<[Photos]> = BehaviorRelay(value: [])
+    var searchText :  BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     let disposeBag = DisposeBag()
     
     
@@ -81,7 +83,7 @@ extension TableViewModel {
     }
     
     func searchResult() {
-        let combinedSignal =  Observable.combineLatest(searchRepository.searchText, self.fetchedPictures)
+        let combinedSignal =  Observable.combineLatest(searchText, self.fetchedPictures)
         
         combinedSignal
             .filter({!$0.1.isEmpty})
@@ -93,7 +95,7 @@ extension TableViewModel {
                 })
             })
             .distinctUntilChanged()
-            .bind(to: searchRepository.filteredPictures)
+            .bind(to: filteredPictures)
             .disposed(by: disposeBag)
     }
     

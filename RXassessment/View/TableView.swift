@@ -45,12 +45,12 @@ private extension TableView {
                     .trimmingCharacters(in: .whitespaces)
             })
         .subscribe(onNext: { searchtext in
-                self.viewModel.searchRepository.searchText.accept(searchtext)
+                self.viewModel.searchText.accept(searchtext)
         })
         .disposed(by: disposalBag)
         
         //TableView dataSource
-        viewModel.searchRepository.filteredPictures
+        viewModel.filteredPictures
 //            .map{$0}
             .subscribe(on: MainScheduler.instance)
             .bind(to: tableView
