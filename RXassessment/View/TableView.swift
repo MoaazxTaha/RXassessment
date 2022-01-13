@@ -23,14 +23,9 @@ class TableView : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bind()
+        viewModel.fetchData()
         tableViewSetup()
-        viewModel.fetchData {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else {return}
-                    self.tableViewHandling ()
-                }
-        }
+        bind()
     }
 }
 
@@ -54,20 +49,9 @@ private extension TableView {
         })
         .disposed(by: disposalBag)
         
-    }
-    
-    func tableViewSetup() {
-
-        tableView.register(UINib(nibName: TableViewCell.identifier, bundle: nil), forCellReuseIdentifier: TableViewCell.identifier)
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
-        
-    }
-    
-    func tableViewHandling() {
-        
-        viewModel.searchRepository.requestedPictures
-            .map{$0}
+        //TableView dataSource
+        viewModel.searchRepository.filteredPictures
+//            .map{$0}
             .subscribe(on: MainScheduler.instance)
             .bind(to: tableView
                     .rx
@@ -78,7 +62,21 @@ private extension TableView {
                 
                 cell.configureTableCell(photos: pictures)
             }.disposed(by: disposalBag)
+        
     }
+    
+    func tableViewSetup() {
+
+        tableView.register(UINib(nibName: TableViewCell.identifier, bundle: nil), forCellReuseIdentifier: TableViewCell.identifier)
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 200
+        
+    }
+    
+//    func tableViewHandling() {
+//
+//
+//    }
 }
 
 

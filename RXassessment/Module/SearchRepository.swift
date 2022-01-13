@@ -14,7 +14,7 @@ class SearchRepository {
     var searchText :  BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     var searchList = SearchList()
     var SearchState : BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: false)
-    var requestedPictures : BehaviorRelay<[Photos]> = BehaviorRelay(value: [])
+    var filteredPictures : BehaviorRelay<[Photos]> = BehaviorRelay(value: [])
 }
 
 struct SearchList {
